@@ -1,23 +1,23 @@
 {
-  "name": "goit-js-hw-09",
+  "name": "goit-js-hw-10",
   "version": "1.0.0",
-  "description": "",
+  "description": "Включите отображение скрытых файлов и папок в проводнике своей операционной системы, иначе вы не\r сможете выбрать и скопировать себе файлы настроек проекта, имена которых начинаются с точки.",
   "main": "index.js",
   "scripts": {
     "dev": "parcel src/*.html",
-    "build": "parcel build src/*.html --public-url /goit-js-hw-09/"
+    "build": "parcel build src/*.html --public-url /goit-js-hw-10/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maslovvasil/goit-js-hw-09.git"
+    "url": "git+https://github.com/maslovvasil/goit-js-hw-10.git"
   },
   "keywords": [],
   "author": "Vasyl Maslov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/maslovvasil/goit-js-hw-09"
+    "url": "https://github.com/maslovvasil/goit-js-hw-10"
   },
-  "homepage": "https://github.com/maslovvasil/goit-js-hw-09",
+  "homepage": "https://github.com/maslovvasil/goit-js-hw-10",
   "devDependencies": {
     "parcel-bundler": "^1.12.5",
     "parcel-plugin-handlebars-precompile": "^1.0.2",
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "flatpickr": "^4.6.13",
+    "lodash.debounce": "^4.0.8",
     "notiflix": "^3.2.5"
   }
 }
