@@ -1,34 +1,107 @@
-* {
-  box-sizing: border-box;
+.search-form {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%) scale(1);
+  height: 60px;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #3747de;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fafafa;
-  color: #212121;
-  line-height: 1.5;
+.search-form input {
+  width: 200px;
+  height: 30px;
+  margin-right: 10px;
+  padding: 0;
+  padding-left: 10px;
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  border-radius: 4px;
 }
 
-#search-box {
-  font: inherit;
-  padding: 8px;
-  max-width: 320px;
-  margin-bottom: 16px;
+.search-form input::placeholder {
+  color: #e1e1e1;
 }
 
-li {
-  list-style: none;
+.search-form button {
+  cursor: pointer;
+  height: 34px;
+  width: 60px;
+  padding: 2px;
+  border: 2px solid #ffffff;
+  background-color: transparent;
+  color: #ffffff;
+  border-radius: 4px;
 }
 
-.country-item,
-.title {
-display: flex;
-align-items: center;
+.search-form button:focus,
+.search-form button:hover {
+  background-color: #4a5bf2;
 }
 
-.country-flag {
-margin-right: 20px;
+.gallery {
+  margin-top: 70px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, 300px);
+  justify-content: center;
+}
+
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  outline: 1px solid rgba(89, 89, 91, 0.4);
+  border-radius: 4px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+}
+
+.photo-link img {
+  display: block;
+  height: 200px;
+  object-fit: cover;
+  background-image: linear-gradient(rgba(47, 48, 58, 0.4), rgba(47, 48, 58, 0.4));
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 10px;
+  overflow: hidden;
+}
+
+.info-item span {
+  display: block;
+  text-align: center;
+}
+
+.load-more {
+  cursor: pointer;
+  display: block;
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 34px;
+  width: 100px;
+  padding: 2px;
+  border: none;
+  background-color: #3747de;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.load-more:focus,
+.load-more:hover {
+  background-color: #4a5bf2;
+}
+
+.load-more.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
