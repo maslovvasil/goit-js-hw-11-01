@@ -7,7 +7,7 @@ function createPhotoMarkup({
   comments,
   downloads,
 }) {
-  return `<div class="photo-card">
+  return `<li class="photo-card">
             <a href="${largeImageURL}" class="photo-link">
             <img src="${webformatURL}" alt="${tags}" loading="lazy" class="photo-card__img" width="300"/>
             </a>
@@ -29,6 +29,6 @@ function createPhotoMarkup({
                 <span>${downloads}</span>
               </p>
             </div>
-          </div>`;
+          </li>`;
 }
 export { createPhotoMarkup };
