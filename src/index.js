@@ -1,207 +1,87 @@
-// import './css/styles.css';
+import { refs } from './js/services/getRefs';
+import ApiService from './js/services/apiServise';
+import renderGalleryMarkup from './js/components/gallery';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-// const DEBOUNCE_DELAY = 300;
+hideButton();
+refs.searchForm.addEventListener('submit', handleSearchFormSubmit);
+refs.loadMoreBtn.addEventListener('click', handleLoadMoreBtnClick);
 
+let inputValue = '';
+let totalPages = 0;
+const lightbox = new SimpleLightbox('.gallery a');
+const api = new ApiService();
 
-import './css/styles.css';
-import fetchCountries from './fetchCountries';
-import { debounce, trim } from 'lodash';
-import { Notify } from 'notiflix';
-
-const DEBOUNCE_DELAY = 300;
-
-const refs = {
-    searchBox: document.querySelector('#search-box'),
-    countryList: document.querySelector('.country-list'),
-    countryInfo: document.querySelector('.country-info'),
-  };
-  
-  refs.searchBox.addEventListener('input', debounce(onsearchBox, DEBOUNCE_DELAY));
-  
-  function onsearchBox() {
-    const countryName = trim(refs.searchBox.value);
-  
-    if (countryName === '') {
-      clearOutput();
-      return;
-    }
-  
-    fetchCountries(countryName)
-      .then(country => {
-        if (country.status === 404) {
-          clearOutput();
-          throw 'Oops, there is no country with that name';
-        }
-  
-        if (country.length > 10) {
-          clearOutput();
-  
-          Notify.info('Too many matches found. Please enter a more specific name.', {
-            timeout: 6000,
-          });
-          return;
-        } else if (country.length > 1 && country.length < 10) {
-          renderCountryList(country);
-          return;
-        } else {
-          renderCountryInfo(country[0]);
-        }
-      })
-      .catch(message =>
-        Notify.failure(message, {
-          timeout: 6000,
-        }),
-      );
+async function handleSearchFormSubmit(e) {
+  e.preventDefault();
+  clearMarkup();
+  inputValue = e.currentTarget.elements.searchQuery.value.trim().replace(' ', '+');
+  if (!inputValue) {
+    Notify.failure('Please fill in the search field');
+    return;
   }
-  
-  function renderCountryList(country) {
-    clearOutput();
-  
-    const markupList = country
-      .map(({ name: { official }, flags: { svg } }) => {
-        return `
-      <li class="country-item">
-        <img class="country-flag" src="${svg}" alt="flag of ${official}" width="32px"/>
-        <p class="country-name">${official}</p>
-      </li>
-    `;
-      })
-      .join('');
-  
-    refs.countryList.insertAdjacentHTML('afterbegin', markupList);
+  api.resetPage();
+  try {
+    const res = await api.fetchPhotos(inputValue);
+    loadFirstPage(res);
+  } catch (error) {
+    handleError(error);
   }
-  
-  function renderCountryInfo(country) {
-    clearOutput();
-  
-    const {
-      name: { official },
-      capital,
-      population,
-      flags: { svg },
-      languages,
-    } = country;
-  
-    const langs = Object.values(languages).join(', ');
-  
-    const markupCard = `
-      <div class="title">
-        <img class="country-flag" src="${svg}" alt="flag of ${official}" width="60px" />
-        <p class="country">${official}</p>
-      </div>
-      <p class="property">Capital: <span class="value">${capital}</span></p>
-      <p class="property">Population: <span class="value">${population}</span></p>
-      <p class="property">Languages: <span class="value">${langs}</span></p>
-    `;
-  
-    refs.countryInfo.insertAdjacentHTML('afterbegin', markupCard);
+}
+
+function loadFirstPage({ hits, totalHits }) {
+  clearMarkup();
+  if (!hits.length) {
+    Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+    return;
   }
-  
-  function clearOutput() {
-    refs.countryList.innerHTML = '';
-    refs.countryInfo.innerHTML = '';
+  totalPages = Math.ceil(totalHits / hits.length);
+  renderGalleryMarkup(hits);
+  if (api.page !== totalPages) {
+    showButton();
   }
+  Notify.success(`Hooray! We found ${totalHits} images.`);
+  lightbox.refresh();
+}
 
+async function handleLoadMoreBtnClick(e) {
+  e.target.classList.add('is-hidden');
+  api.incrementPage();
+  try {
+    const res = await api.fetchPhotos(inputValue);
+    loadNextPage(res);
+  } catch (error) {
+    handleError(error);
+  }
+}
 
+function loadNextPage(res) {
+  renderGalleryMarkup(res.hits);
+  if (api.page === totalPages) {
+    hideButton();
+    Notify.info("We're sorry, but you've reached the end of search results.");
+    lightbox.refresh();
+    return;
+  }
+  showButton();
+  lightbox.refresh();
+}
 
+function clearMarkup() {
+  hideButton();
+  refs.galleryDiv.innerHTML = '';
+}
 
-// // import `./css/styles.css`;
-// import './css/styles.css';
-// import fetchCountries from "./fetchCountries";
-// import { debounce, trim } from `lodash`;
-// import { Notify } from "notiflix";
-// // import { render } from "sass";
+function handleError(error) {
+  console.log(error);
+  Notify.failure('Something went wrong.Please try again');
+}
 
-// import './css/styles.css';
-// import fetchCountries from './fetchCountries';
-// import { debounce, trim } from 'lodash';
-// import { Notify } from 'notiflix';
-
-// const DEBOUNCE_DELAY = 300;
-
-// const refs = {
-//   searchBox: document.querySelector(`#search-box`),
-//   countryList: document.querySelector(`.country-list`),
-//   countryInfo: document.querySelector(`country-info`),
-// };
-
-// refs.searchBox.addEventListener(`input`, debounce(onsearchBox, DEBOUNCE_DELAY));
-
-// function onsearchBox() {
-//   const countryName = trim(refs.searchBox.value);
-
-//   if (countryName === ``) {
-//     clearOutput();
-//     return;
-//   }
-
-//   fetchCountries(countryName)
-//     .then(country => {
-//       if (country.status === 404) {
-//         clearOutput();
-//         throw `Oops, there is no country with that name`;
-//       }
-    
-//       if (countryName.length > 10) {
-//         clearOutput();
-
-//         Notify.info(`Too many matches found. Please enter a more specific name.`, {
-//           timeout: 6000,
-//         });
-//         return;
-//       } else if (country.length > 1 && country.length < 10) {
-//         renderCountryList(country);
-//         return;
-//       } else {
-//         renderCountryInfo(country[0]);
-//       }
-//     })
-//     .catch(message =>
-//       Notify.failure(message, {
-//         timeout: 6000,
-//       }),
-//     );
-// }
-
-// function renderCountryList(country) {
-//   clearOutput();
-//   const markupList = country
-//   map(({ name: { official }, flags: { svg } }) => {
-//     return `
-//   <li class="country-item">
-//   <img class=country-flag" src="${svg}" alt="flag of ${official}" width="32px"/>
-//   <p class="country-name'>${official}</p>
-//   </li>
-//   `;
-//   })
-//     .join(``);
-//   refs.countryList.insertAdjacentHTML(`afterbegin`, markupList);
-// }
-
-// function renderCountryInfo(country) {
-//   clearOutput();
-//   const {
-//     name: { official },
-//     capital,
-//     population,
-//     flags: { svg },
-//     languages,
-//   } = country;
-//   const langs = Object.values(languages).join(`, `);
-
-//   const markupCard = `
-//   <div class="title"> 
-//   <img class="country-flag" src="${svg}" alt="flag of ${official}" width="60px" />>
-//   <p class="county">${official}</p>
-//   </div>
-//   <p class="property">Capital: <span class="value">${capital}</span></p>
-//   <p class="property">Population: <span class="value">${population}</span></p>
-//   <p class="property">Languages: <span class="value">${languages}</span></p>
-//   `;
-//   refs.countryInfo.insertAdjacentHTML(`afterbegin`, markupCard);
-// }
- 
-// function clearOutput() {
-//   refs.countryList.innerHTML = '';
-//   refs.countryInfo.innerHTML = '';
-// }
+function hideButton() {
+  refs.loadMoreBtn.classList.add('is-hidden');
+}
+function showButton() {
+  refs.loadMoreBtn.classList.remove('is-hidden');
+}
